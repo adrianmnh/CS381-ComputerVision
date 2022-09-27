@@ -22,6 +22,30 @@ g++ noa_adrian_main.cpp -o main.exe
 #include "graph.cpp"
 using namespace std;
 
+class BiMean{
+
+    int numRows, numCols, minVal, maxVal;
+    int maxHeight = 0; // largest histAry[i]
+    int maxGval; // maximum calculated distribution value;
+    int offSet; // one-tenth of the maxVal-minVal
+/* 
+        in bimodal histogram, the first modal occupies at least one-tenth of
+        the histogram population from minVal to maxVal of the histogram
+*/ 
+    int dividePt; // Initialy set of offset, increases by 1 each iteration.
+/*
+        Selected treshold value is at the point at divedePt where the "distance"
+        between the two bi-Gaussian curves and the histogram is the minimum
+*/
+    int* histAry = new int[maxVal+1];   // 1D[maxVal+1] to store Histogram Array
+                                        // Needs to be dynamically allocated at run-time
+
+
+
+
+
+};
+
 int main(int argc, const char* argv[]) {
     cout << endl;
 
@@ -43,20 +67,41 @@ int main(int argc, const char* argv[]) {
     inFile >> numRows >> numCols >> minVal >> maxVal;
 
     int hist[maxVal+1];
-    int max_y = 0;
+    // int* hist = new int[maxVal+1];
+    int maxHeight = 0; // largest histAry[i]
 
     for (int i = 0; i<=maxVal; i++){
             inFile >> pixel >> hist[i];
-            max_y = (hist[i] > max_y) ? max_y = hist[i] : max_y; 
+            maxHeight = (hist[i] > maxHeight) ? maxHeight = hist[i] : maxHeight; 
     }
-    // cout << max_y;
 
     inFile.close();
 
-    // for(int k:hist)cout<< k;
+    int maxGval; // maximum calculated distribution value;
+    int offSet; // one-tenth of the maxVal-minVal
+    /* 
+        in bimodal histogram, the first modal occupies at least one-tenth of
+        the histogram population from minVal to maxVal of the histogram
+    */ 
+   int dividePt; // Initialy set of offset, increases by 1 each iteration.
+   /*
+        Selected treshold value is at the point at divedePt where the "distance"
+        between the two bi-Gaussian curves and the histogram is the minimum
+    */
+    // int* histAry = new int[maxVal+1]; 
+    // 1D[maxVal+1] "modified" Gaussian function
+    // histAry = {0};    
+    int* histAry[maxVal+1]={0};
+
+    for(int i=0; i<maxVal+1; i++)
+    cout << *(histAry+i) << endl;
+    // for(int& k:histAry)cout<< k;
 
     // findMax(hist, maxVal);
-    graphLine(maxVal,max_y,hist);
+    // graphLine(maxVal,maxHeight,hist);
+    cout << "deleteing dynamic arrays";
+    // delete[] hist;
+    // delete[] histAry;
 
     return 0;
 }

@@ -54,7 +54,9 @@ static void graphLine(int x_axis, int y_axis, int arr[]){
 
     for (int row=0; row<=y_axis; row++){
         for (int col=0; col<=x_axis; col++){
-            if ((row==x_axis && col==y_axis) || (col==0) || row==y_axis) cout << "* ";
+            if (row==y_axis && col == 0) cout << "o_"; 
+            else if (col==0) cout << "| ";
+            else if (row==y_axis || col<1) cout << "__";
             else if(row<y_axis && col>0){
                 if(funcLine(col,row,x_axis,y_axis, arr)) cout << "* ";
                 else cout << "  ";
