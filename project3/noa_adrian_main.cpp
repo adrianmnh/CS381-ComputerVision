@@ -138,7 +138,9 @@ public:
 
     double modifiedGauss(int x, double mean, double var, int maxHeight){
         //G(X) = maxHeight * exp( - ( (x-mean)^2 / (2* c2) )
+
         double G = (double)maxHeight * exp(-1 * pow(x-mean, 2) / (2*var));
+        // cout << x << " " << mean << " " << var << " " << maxHeight << " " << G << endl;
         return G;
     }
 
@@ -149,7 +151,7 @@ public:
     }
 
     int biMeanGauss(int dividePt, ofstream &outFile){
-        outFile << "DividePt" << "\tLeftSum" << "\t\tRightSum" << "\tTotalSum" << "\tDifference" << "\tBestThreshold" << endl;
+        outFile << "DividePt" << "\tLeftSum" << "\t\tRightSum" << "\tTotalSum" << "  PrevDiff " << " BestThr" << endl;
         int bestThr = dividePt;
         double sum1;
         double sum2;
@@ -176,7 +178,7 @@ public:
                 << "\t\t" << sum2 
                 << "\t\t" << total 
                 << "\t\t" << minSumDiff 
-                << "\t\t\t" << bestThr << endl;
+                << "\t\t" << bestThr << endl;
     }
 
     double fitGauss(int leftIndex, int rightIndex, int* GaussAry){
@@ -277,6 +279,7 @@ public:
     void deleteOverlay(char** graph){
         for (int i = 0; i < maxHeight+1; i++) delete[] graph[i];
         delete[] graph;
+        cout << "freed overlay resources" << endl;
     }
 
 
@@ -345,7 +348,10 @@ int main(int argc, const char* argv[]) {
 
     inFile.close();
     outFile1.close();
+    cout << "outFile1 graphs created successfully" << endl;
     outFile2.close();
+    cout << "outFile2 debug created successfully" << endl;
+
 
     return 0;
 }
