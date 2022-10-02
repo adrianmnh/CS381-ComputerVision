@@ -2,12 +2,13 @@
 
 Created by Adrian Noa
 
-Objective: To take an image asset and smoothen each of its pixels using binary and nonbinary threshold operations
+Objective: 
+
+To take an image's histogram from a text and find the best threshold using the bi-Gaussian automatic threshold selection method.
+
+This process yields a Gaussian function which will be graphed along with the histogram, and the best threshold.
+
 Usage:
-
-g++ noa_adrian_main.cpp -o main.exe && ./main.exe data.txt out1.txt out2.txt
-
-OR
 
 g++ noa_adrian_main.cpp -o main.exe && ./main.exe BiGuass_data2.txt outFile1.txt outFile2.txt && rm ./main.exe
 
@@ -50,7 +51,6 @@ public:
 
     char** GaussGraph;  // 2D[maxVal+1 x maxHeight+1] initialize to "blank" 
 /*        for displaying Gaussian curves in 2D.       */
-//    int* arr = new int[m * n];
 
     BiMean(ifstream &inFile){
     // BiMean(int numRows, int numCols,int minVal,int maxVal){
@@ -58,12 +58,6 @@ public:
     inFile >> numRows >> numCols >> minVal >> maxVal;
         histAry = new int[maxVal+1]();
         cout << "Allocated 1D Histogram Array" << endl;
-        
-        // for(int i=0; i<3; i++)for(int j=0; j<3; j++)histGraph[i][j] = 'g';   
-
-        // int **test = new int*[3]{3*new int[]()};
-        // for(int i=0; i<3; i++)for(int j=0; j<3; j++)test[i][j] = 1;   
-        // for(int i=0; i<3; i++)for(int j=0; j<3; j++) cout << test[i][j] << " ";
     }
 
     int loadHist(ifstream &inFile){ // add histogram to histAry from inFile and returns the max among hist[i]
@@ -73,29 +67,11 @@ public:
             inFile >> numberOfPixels >> numberOfPixels;
             histAry[i] = numberOfPixels;
             max = (numberOfPixels > max) ? max = numberOfPixels : max; 
-            // if(pixel > max) max=pixel;
-            // cout << numberOfPixels << endl;
         }
-        // cout<< max;
         return max;
     }
 
     void allocate(){
-
-        // this->GaussAry = new int[maxVal+1]{0};
-
-        // this->histGraph = new char*[maxVal+1];
-
-        // this->GaussGraph = new char*[maxVal+1];
-
-        // for(int i=0; i<maxVal+1;i++) {
-        //     histGraph[i] = new char[maxHeight+1]();
-        //     GaussGraph[i] = new char[maxHeight+1]();
-        //     for (int j = 0; j < maxHeight+1; j++) {
-        //         histGraph[i][j]=' ';
-        //         GaussGraph[i][j]=' ';
-        //     }            
-        // }
 
         this->GaussAry = new int[maxVal+1]{0};
         cout << "Allocated 1D Gauss array" << endl;
@@ -115,54 +91,18 @@ public:
             }            
         }
         cout << "Allocated histogram and gaussian subarrays" << endl;
-
-        
-
-        // for (int i = 0; i < maxHeight+1; i++) {
-        //     cout << histGraph[i]<<endl;
-        // }
-        
-
-        // for(int i=0; i<maxVal+1; i++){
-        //     for(int j=0; j<maxHeight+1; j++) 
-        //         cout << (int)histGraph[i][j];
-        //     cout << endl;
-        // }
-        // cout << endl;
-        // // for(int i=0; i<maxVal+1; i++)for(int j=0; j<maxHeight+1; j++) cout << (int)GaussGraph[i][j] << "c";
-        // cout << endl;
     } 
-    
-
-    
 
     void plotGraph(int* ary, char** graph, char symbol){
         int j;
         for (int i = 0; i < maxVal+1; i++){
-            graph[maxHeight][i] = '-';
+            graph[maxHeight][i] = '_';
             if(ary[i] >= 0){
-                // for (j = maxHeight+1-ary[i]; j < maxHeight+1; j++) {
-                // graph[maxHeight-ary[i]][i] = symbol; //  display as curve
-            for (j = maxHeight-ary[i]; j < maxHeight; j++) {     // display
-                graph[j][i] = symbol;                            // as
-            }                                                    // line graph
+                for (j = maxHeight-ary[i]; j < maxHeight; j++) {     // display
+                    graph[j][i] = symbol;                            // as
+                }                                                    // line graph
             }
         }
-
-        // for (int i = 0; i < maxHeight+1; i++){
-        //     if(ary[i] > 0){
-        //         graph[ary[i][ary[i]] = symbol;
-        //     }
-        //     for (int j = 0; j < ary[i] ; j++)
-        //     {
-        //         graph[i][j] = 'c';
-        //     }   
-        // }
-        // addVertical(graph, 6);
-
-        // for (int i = 0; i < maxHeight+1; i++) {
-        //     cout << histGraph[i]<<endl;
-        // }
     }
 
     void addVertical(char** graph, int thr){
@@ -183,7 +123,6 @@ public:
                 maxHeight = histAry[i];
             }
         }
-        // cout << double(sum)/(double)numPixels << endl;
         return double(sum)/(double)numPixels;
     }
 
@@ -194,7 +133,6 @@ public:
             sum += (double)histAry[i] * pow((double)i-mean,2);
             numPixels += histAry[i];
         }
-        // cout << (double)sum/(double)numPixels << endl;
         return (double)sum/(double)numPixels;
     }
 
@@ -229,7 +167,6 @@ public:
             toFile(outFile, dividePt, sum1, sum2, total, minSumDiff, bestThr);
             dividePt++;
         }
-        
         return bestThr;
     }
 
@@ -261,17 +198,23 @@ public:
         sum2 = fitGauss(bestThrVal, maxVal, GaussAry);
     }
 
+    void bestThr(ofstream &outFile, int bestThrVal){
+        outFile << "Best Threshold value: " << bestThrVal << endl << endl;
+    }
 
     void drawGraph(ofstream &outFile, char** graphAry, string str, int* ary){
-        
         drawTitle(outFile, str);
         for (int i = 0; i < maxHeight+1; i++){
             for (int j = 0; j < maxVal+1; j++){
-                outFile << graphAry[i][j] << " ";
-            }
-            outFile << endl;
-        }
-        outFile << endl;
+                if(i == maxHeight) outFile << graphAry[i][j] << graphAry[i][j];
+                else outFile << graphAry[i][j] << " ";
+            } outFile << endl;
+        } outFile << endl;
+    }
+
+    void plotAll(ofstream &outFile, int bestThr){
+        drawTitle(outFile, "Gaussian Curve '+' with Histogram overlay'o/-'");
+        plotOverlay(outFile, bestThr);
     }
 
     void drawTitle(ofstream &outFile, string str){
@@ -284,41 +227,38 @@ public:
                     if(i==sl-1) outFile << "  " << str << "  ";
                     else if(i<=sl-1) outFile << "*";
                     else if (i>sl+str.length()+2) outFile << "*";
-                }
-                else outFile << "*";
-            }
-            outFile << endl;
+                } else outFile << "*";
+            } outFile << endl;
         }
     }
-
 
     void plotOverlay(ofstream &outFile, int bestThr){
 
         char** overlay = allocateOverlay();
 
-        for (int i = 0; i < maxVal+1; i++) {            // draw histogram
-                overlay[maxHeight][i] = '-';
-            for (int j = maxHeight-histAry[i]; j < maxHeight; j++) {
-                if(j < maxHeight-GaussAry[i]) overlay[j][i] = '+'; 
-                else overlay[j][i] = '/';
-            } 
-            for (int j = maxHeight-GaussAry[i]; j < maxHeight; j++){        // draw gaussian curve
-                if(j < maxHeight-histAry[i] && (int)overlay[j][i] > 0) overlay[j][i] = '+';
-                else overlay[j][i] = 'o';
+        for (int i = 0; i < maxVal+1; i++) {            // draw Gaussian Curve
+
+            for (int j = maxHeight-GaussAry[i]; j < maxHeight; j++) overlay[j][i] = '+'; 
+
+            for (int j = maxHeight-histAry[i]; j < maxHeight; j++){  // draw Histogram
+                if(overlay[j][i] == '+') overlay[j][i] = 'O';
+                else if (overlay[j][i] == ' ')overlay[j][i] = '-';
+                // else overlay[j][i] = '^';
             }         
         }
+
         addVertical(overlay, bestThr);
         drawToFile(outFile, overlay);
-
         deleteOverlay(overlay);
     }
 
     char** allocateOverlay(){
         char **overlay = new char*[maxHeight+1];
-        for (int i = 0; i < maxHeight+1; i++){
-            overlay[i] = new char[maxVal+1];
-            for(int j=0; j<maxVal+1; j++) {
-                overlay[i][j] = ' ';
+        for(int j=0; j<maxHeight+1; j++) {
+            overlay[j] = new char[maxVal+1];
+            for (int i = 0; i < maxVal+1; i++){
+                if(j==maxHeight) overlay[j][i] = '_';
+                else overlay[j][i] = ' ';
             }
         }
         cout << "allocated 2d for overlay" << endl;
@@ -328,23 +268,17 @@ public:
     void drawToFile(ofstream &outFile, char** graph){
         for (int i = 0; i < maxHeight+1; i++){
             for (int j = 0; j < maxVal+1; j++){
-                outFile << graph[i][j] << " ";
+                if(i==maxHeight) outFile << graph[i][j] << graph[i][j];
+                else outFile << graph[i][j] << " ";
             }
             outFile << endl;
-            // outFile << graph[i] << endl;
         }
     }
     void deleteOverlay(char** graph){
-        for (int i = 0; i < maxHeight+1; i++){
-            delete[] graph[i];
-        }
+        for (int i = 0; i < maxHeight+1; i++) delete[] graph[i];
         delete[] graph;
     }
 
-    void plotAll(ofstream &outFile, int bestThr){
-        drawTitle(outFile, "hello");
-        plotOverlay(outFile, bestThr);
-    }
 
     ~BiMean(){
         delete[] histAry;
@@ -400,7 +334,7 @@ int main(int argc, const char* argv[]) {
     biMean.plotGraph(biMean.GaussAry, biMean.GaussGraph, '+');
     biMean.drawGraph(outFile1, biMean.GaussGraph, "Gaussian Curve Graph", biMean.GaussAry);
 
-    outFile1 << "Best Threshold value: " << bestThrVal << endl;
+    biMean.bestThr(outFile1, bestThrVal);
 
     biMean.addVertical(biMean.histGraph, bestThrVal);
 
