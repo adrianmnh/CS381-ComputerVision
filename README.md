@@ -1,1 +1,1 @@
-# CS381-ComputerVision
+# Computer Vision Algorithms 
